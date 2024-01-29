@@ -3,9 +3,7 @@ server:
 
 spring:
   datasource:
-#    url: jdbc:hsqldb:mem:hsql://${HSQL_HOST:localhost}/${HSQL_DATABASE:utility-bill-db}
     url: jdbc:hsqldb:mem:hsql://localhost/utility-bill-db
-#    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:demo1db}?createDatabaseIfNotExist=true
     username: ${HSQL_USERNAME:root}
     password: ${HSQL_PASSWORD:root}
     driver-class-name: org.hsqldb.jdbc.JDBCDriver
@@ -18,5 +16,3 @@ spring:
   liquibase:
     enabled: true
     change-log: classpath:/db/changelog/db.changelog-master.yml
-#    default-schema: DB
-#    liquibase-schema: DB
