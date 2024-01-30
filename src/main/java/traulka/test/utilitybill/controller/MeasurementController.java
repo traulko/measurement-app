@@ -58,6 +58,23 @@ public class MeasurementController {
         return ResponseEntity.ok(service.findAll(pageable));
     }
 
+    @GetMapping("/{payerId}/history")
+    @Operation(summary = "Get a measurement history by payer id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Found the measurement history"),
+            @ApiResponse(responseCode = "500", description = "Some paging arg is not correct", content = @Content)
+    })
+    // need to add paging args validation in feature
+    public ResponseEntity<Page<MeasurementDto>> findAllPagingByPayerId(
+            @RequestParam(required = false, defaultValue = "0") final Integer page,
+            @RequestParam(required = false, defaultValue = "5") final Integer size,
+            @RequestParam(required = false, defaultValue = "id") final String sort,
+            @Parameter(description = "id of measurement to be searched")
+            @PathVariable final Long payerId) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sort));
+        return ResponseEntity.ok(service.findAllByPayerId(pageable, payerId));
+    }
+
     @PostMapping
     @Operation(summary = "Create a new measurement")
     @ApiResponses(value = {

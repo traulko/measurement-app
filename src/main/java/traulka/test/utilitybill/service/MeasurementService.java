@@ -31,4 +31,9 @@ public class MeasurementService {
         return repository.findAll(pageable)
                 .map(mapper::toDto);
     }
+
+    public Page<MeasurementDto> findAllByPayerId(Pageable pageable, Long payerId) {
+        return repository.findAllByPayerId(pageable, payerId)
+                .map(mapper::toDto);
+    }
 }

@@ -25,6 +25,7 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -75,11 +76,46 @@ class MeasurementServiceTest {
                         Measurement.builder().setId(2L).build())));
         when(mapper.toDto(any(Measurement.class))).thenReturn(MeasurementDto.builder().build());
 
-        Page<MeasurementDto> payerDtoPage = service.findAll(pageable);
+        Page<MeasurementDto> measurementDtoPage = service.findAll(pageable);
 
         verify(repository, times(1)).findAll(pageable);
-        assertEquals(payerDtoPage.getTotalElements(), 2);
-        assertEquals(payerDtoPage.getTotalPages(), 1);
+        assertEquals(measurementDtoPage.getTotalElements(), 2);
+        assertEquals(measurementDtoPage.getTotalPages(), 1);
+    }
+
+    @Test
+    public void findAllByPayerId_successful() {
+        Pageable pageable = PageRequest.of(1, 5, Sort.by("id"));
+
+        MeasurementDto measurementDtoAfterMapping = MeasurementDto.builder()
+                .setPayer(PayerDto.builder()
+                        .setId(1L)
+                        .build())
+                        .build();
+
+        when(repository.findAllByPayerId(any(Pageable.class), any(Long.class)))
+                .thenReturn(new PageImpl<>(Arrays.asList(Measurement.builder().setId(1L).build(),
+                        Measurement.builder().setId(2L).build())));
+        when(mapper.toDto(any(Measurement.class))).thenReturn(measurementDtoAfterMapping);
+
+        Page<MeasurementDto> measurementDtoPage = service.findAllByPayerId(pageable, 1L);
+
+        verify(repository, times(1)).findAllByPayerId(pageable, 1L);
+        assertEquals(measurementDtoPage.getTotalElements(), 2);
+        assertEquals(measurementDtoPage.getTotalPages(), 1);
+        assertEquals(measurementDtoPage.getContent().get(0).getPayer().getId(), 1L);
+        assertEquals(measurementDtoPage.getContent().get(1).getPayer().getId(), 1L);
+    }
+
+    @Test
+    public void findAllByPayerId_payerNotFound() {
+        Pageable pageable = PageRequest.of(1, 5, Sort.by("id"));
+        when(repository.findAllByPayerId(pageable, 1L)).thenReturn(new PageImpl<>(new ArrayList<>()));
+
+        Page<MeasurementDto> allByPayerId = service.findAllByPayerId(pageable, 1L);
+
+        verify(repository, times(1)).findAllByPayerId(pageable, 1L);
+        assertEquals(allByPayerId.getTotalElements(), 0);
     }
 
 }

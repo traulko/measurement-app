@@ -107,6 +107,36 @@ class MeasurementControllerTest {
     }
 
     @Test
+    public void shouldReturn200CodeWhenFindAllByPayerIdMeasurements() throws Exception {
+        Pageable pageable = PageRequest.of(1, 5, Sort.by("id"));
+
+        when(service.findAllByPayerId(pageable, 1L)).thenReturn(new PageImpl<>(Arrays.asList(
+                MeasurementDto.builder()
+                        .setId(1L)
+                        .setPayer(PayerDto.builder()
+                                .setId(1L)
+                                .build())
+                        .build(),
+                MeasurementDto.builder()
+                        .setId(2L)
+                        .setPayer(PayerDto.builder()
+                                .setId(1L)
+                                .build())
+                        .build())));
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/measurement/" + 1L + "/history")
+                        .param("page", String.valueOf(1))
+                        .param("size", String.valueOf(5))
+                        .param("sort", "id"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].id").value(1L))
+                .andExpect(jsonPath("$.content[1].id").value(2L))
+                .andExpect(jsonPath("$.content[0].payer.id").value(1L))
+                .andExpect(jsonPath("$.content[1].payer.id").value(1L))
+                .andExpect(jsonPath("$.totalElements").value(2));
+    }
+
+    @Test
     public void shouldReturn200CreateNewMeasurementSuccessfully() throws Exception {
         LocalDateTime dateTime = LocalDateTime.of(2023, 1, 1, 1, 1, 1);
 
