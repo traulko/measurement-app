@@ -1,7 +1,7 @@
 # Gas & Water Usage Monitoring Application
 
 ### Endpoints:
-![img.png](img.png)
+![img_1.png](img.png)
 
 ### Swagger URL - http://localhost:8080/swagger-ui/index.html#/
 ### API Docs: http://localhost:8080/v3/api-docs
